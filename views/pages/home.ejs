@@ -1,47 +1,92 @@
 <%- include('../partials/header') %>
-<nav style="display:flex; justify-content:flex-end; padding: 1.5rem 2rem; position: absolute; width: 100%; top: 0; box-sizing: border-box; z-index: 10;">
-    <button id="logout-btn" class="heavy-iron-btn" style="font-size: 0.8rem; padding: 0.5rem 1rem;">LEAVE SANCTUM</button>
-</nav>
-<div class="page-container wooden-desk top-down-view">
-    <div class="ornate-frame">
-        <form action="/convert" method="POST" enctype="multipart/form-data" class="upload-area sapphire-boundary">
-            
-            <div class="floating-icons">
-                <span class="file-icon float-anim delay-1">JPEG</span>
-                <span class="file-icon float-anim delay-2">PNG</span>
+    <div class="cyber-container" style="flex-direction: column; justify-content: flex-start;">
+        <div class="cyber-grid-bg"></div>
+        <div class="pixel-noise-bg"></div>
+
+        <!-- Navbar -->
+        <nav class="cyber-navbar">
+            <div class="cyber-logo" data-text="Xshift" style="font-size: 1.5rem; letter-spacing: 1px;">Xshift</div>
+            <div class="cyber-nav-links">
+                <a href="/home" class="cyber-link active">Home</a>
+                <button id="logout-btn" class="cyber-btn-outline">Logout</button>
             </div>
-            
-            <input type="file" name="image" id="file-upload" class="hidden-input" accept="image/png, image/jpeg">
-            <label for="file-upload" class="upload-label">Place your parchment here...</label>
-            
-            <button type="submit" class="heavy-iron-btn bronze-sapphire-btn">CONVERT</button>
-            
-        </form>
+        </nav>
+
+        <!-- Hero Section -->
+        <div class="cyber-hero">
+            <div class="hero-content">
+                <h1 class="hero-heading">Upload your images<span class="blink"
+                        style="color: var(--cyber-accent);">_</span></h1>
+                <p class="cyber-tagline" style="font-size: 1.1rem; margin-bottom: 2rem;">JPEG or PNG &rarr; Convert
+                    instantly to PDF</p>
+
+                <form action="/convert" method="POST" enctype="multipart/form-data" id="upload-form"
+                    class="cyber-upload-form">
+
+                    <input type="file" name="image" id="file-upload" class="hidden-input"
+                        accept="image/png, image/jpeg">
+
+                    <button type="button" class="cyber-btn cyber-glitch-btn" id="trigger-upload"
+                        style="margin-top: 1rem; padding: 16px 35px; font-size: 1.1rem; width: auto;">
+                        <span class="btn-text">UPLOAD</span>
+                    </button>
+                    <div id="file-name-display" class="file-chosen-text"></div>
+
+                    <button type="submit" id="submit-upload" class="cyber-btn-outline"
+                        style="display: none; margin-top: 1.5rem; padding: 12px 25px; border-color: var(--cyber-accent); color: var(--cyber-accent);">
+                        CONVERT TO PDF
+                    </button>
+                </form>
+            </div>
+
+            <!-- Animated Illustration -->
+            <div class="cyber-illustration">
+                <div class="floating-file jpg-file"><span class="inner">JPG</span></div>
+                <div class="arrow-anim">&rarr;</div>
+                <div class="floating-file pdf-file"><span class="inner">PDF</span></div>
+            </div>
+        </div>
     </div>
-</div>
 
-<script>
-    // Add client-side logic to dynamically update text and visual state
-    document.getElementById('file-upload').addEventListener('change', function(e) {
-        if (this.files && this.files.length > 0) {
-            const label = document.querySelector('.upload-label');
-            label.innerText = 'Parchment loaded: ' + this.files[0].name;
-            label.classList.add('glowing-ink');
-            
-            // Intensify the magical container
-            document.querySelector('.upload-area').style.background = 'rgba(41, 182, 246, 0.2)';
-            document.querySelector('.upload-area').style.animationDuration = '1.5s';
-        }
-    });
+    <script>
+        const fileInput = document.getElementById('file-upload');
+        const triggerBtn = document.getElementById('trigger-upload');
+        const displayTxt = document.getElementById('file-name-display');
+        const submitBtn = document.getElementById('submit-upload');
+        const jpgFile = document.querySelector('.jpg-file .inner');
 
-    document.getElementById('logout-btn').addEventListener('click', async () => {
-        try {
-            await fetch('/api/logout', { method: 'POST' });
-            window.location.href = '/login';
-        } catch (e) {
-            console.error('Failed to leave sanctum');
-        }
-    });
-</script>
-</body>
-</html>
+        triggerBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', function () {
+            if (this.files && this.files.length > 0) {
+                displayTxt.innerText = '> FILE_ACQUIRED: ' + this.files[0].name;
+                displayTxt.style.color = 'var(--cyber-accent)';
+                submitBtn.style.display = 'inline-block';
+                triggerBtn.style.display = 'none';
+
+                const ext = this.files[0].name.split('.').pop().toUpperCase();
+                jpgFile.innerText = ext;
+                document.querySelector('.jpg-file').classList.add('glitch-file');
+            }
+        });
+
+        submitBtn.addEventListener('click', () => {
+            submitBtn.innerText = 'CONVERTING...';
+            submitBtn.style.pointerEvents = 'none';
+            submitBtn.style.background = 'rgba(0, 240, 255, 0.2)';
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            try {
+                await fetch('/api/logout', { method: 'POST' });
+                window.location.href = '/login';
+            } catch (e) {
+                console.error('Logout failed');
+            }
+        });
+    </script>
+    </body>
+
+    </html>

@@ -1,36 +1,69 @@
 <%- include('../partials/header') %>
-<div class="page-container stone-wall torch-flicker">
-    <div class="scroll-container vertical-scroll">
-        <div class="crest gold-embossed">Xshift</div>
+<div class="cyber-container">
+    <div class="cyber-grid-bg"></div>
+    <div class="pixel-noise-bg"></div>
+
+    <div class="cyber-login-card glass-panel">
+        <div class="glitch-logo-container">
+            <h1 class="cyber-logo" data-text="Xshift">Xshift</h1>
+            <p class="cyber-tagline">Transform your images into PDFs instantly</p>
+        </div>
         
-        <form id="magic-login-form" class="magic-form">
-            <div class="input-slot parchment-slot">
-                <label>EMAIL</label>
-                <input type="email" id="email" name="email" class="sepia-ink" placeholder="Enter your email..." required>
+        <form id="cyber-login-form" class="cyber-form">
+            <div class="cyber-input-group">
+                <input type="email" id="email" name="email" class="cyber-input" placeholder=" " required>
+                <label for="email" class="cyber-label">Username / Email</label>
+                <div class="cyber-input-border"></div>
             </div>
             
-            <div class="input-slot parchment-slot">
-                <label>PASSWORD</label>
-                <input type="password" id="password" name="password" class="sepia-ink" placeholder="•••••••••" required>
+            <div class="cyber-input-group">
+                <input type="password" id="password" name="password" class="cyber-input" placeholder=" " required>
+                <label for="password" class="cyber-label">Password</label>
+                <button type="button" id="toggle-password" class="cyber-toggle-pwd">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </button>
+                <div class="cyber-input-border"></div>
             </div>
             
-            <div id="form-error" style="color: #ff4d4d; margin-top: 10px; display: none; text-align: center; font-family: 'Cinzel', serif;">Error</div>
-            <button type="submit" class="heavy-iron-btn emerald-glow" style="margin-top: 20px;">Enter the Sanctum</button>
+            <div id="form-error" class="cyber-error" style="display: none;"></div>
             
-            <div style="margin-top:20px; text-align:center; font-family: 'Cinzel', serif; font-size: 0.9rem; color: #d0c090;">
-                <p>Don't have a moniker? <a href="/signup" style="color: #4db8ff; text-decoration: underline;">Forge a new one</a></p>
+            <button type="submit" class="cyber-btn cyber-glitch-btn">
+                <span class="btn-text">LOGIN</span>
+                <span class="btn-bg"></span>
+            </button>
+            
+            <div class="cyber-footer">
+                <p>New user? <a href="/signup" class="cyber-link">Create Account</a></p>
             </div>
         </form>
     </div>
 </div>
 
 <script>
-document.getElementById('magic-login-form').addEventListener('submit', async (e) => {
+// Show/Hide password
+const togglePwd = document.getElementById('toggle-password');
+const pwdInput = document.getElementById('password');
+togglePwd.addEventListener('click', () => {
+    const type = pwdInput.getAttribute('type') === 'password' ? 'text' : 'password';
+    pwdInput.setAttribute('type', type);
+    if(type === 'text') {
+        togglePwd.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>';
+    } else {
+        togglePwd.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+    }
+});
+
+// Form submit
+document.getElementById('cyber-login-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+    const password = pwdInput.value;
     const errorDiv = document.getElementById('form-error');
     errorDiv.style.display = 'none';
+    const btn = document.querySelector('.cyber-btn');
+    
+    // Pixel transition effect
+    btn.classList.add('loading');
     
     try {
         const response = await fetch('/api/login', {
@@ -38,19 +71,22 @@ document.getElementById('magic-login-form').addEventListener('submit', async (e)
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
         });
-        
         const data = await response.json();
         
-        if (response.ok) {
-            // Login successful
-            window.location.href = '/home';
-        } else {
-            errorDiv.style.display = 'block';
-            errorDiv.innerText = data.error || 'Invalid mystic credentials.';
-        }
+        setTimeout(() => {
+            if (response.ok) {
+                document.body.style.animation = 'pixelDissolve 0.8s forwards';
+                setTimeout(() => window.location.href = '/home', 800);
+            } else {
+                btn.classList.remove('loading');
+                errorDiv.style.display = 'block';
+                errorDiv.innerText = data.error || 'Access Denied.';
+            }
+        }, 800);
     } catch (err) {
+        btn.classList.remove('loading');
         errorDiv.style.display = 'block';
-        errorDiv.innerText = 'The connection to the sanctum was severed.';
+        errorDiv.innerText = 'Connection Error.';
     }
 });
 </script>

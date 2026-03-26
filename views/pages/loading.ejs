@@ -1,22 +1,46 @@
 <%- include('../partials/header') %>
-<div class="page-container immersive-loading">
-    <div class="falling-runes"></div>
-    
-    <div class="crystal-ball-stand bronze-stand">
-        <div class="crystal-ball">
-            <div class="vortex sapphire-gold-vortex"></div>
-            <div class="ghost-images"></div>
+<div class="cyber-container">
+    <div class="cyber-grid-bg"></div>
+    <div class="pixel-noise-bg"></div>
+
+    <div class="cyber-loader-wrapper">
+        <div class="cyber-conversion-anim">
+            <div class="cyber-icon image-icon glitch-pulse">IMG</div>
+            <div class="cyber-particles">
+                <span></span><span></span><span></span><span></span><span></span>
+            </div>
+            <div class="cyber-icon pdf-icon">PDF</div>
         </div>
+        
+        <h1 class="cyber-loader-txt">Converting your images<span class="blink">...</span></h1>
+        <p class="cyber-tagline">Please wait while we create your PDF</p>
+
+        <div class="glitch-progress-container">
+            <div class="glitch-progress-bar"></div>
+        </div>
+        <div class="cyber-loading-percentage">0%</div>
     </div>
-    
-    <div class="loading-text pulse-text">Transmuting...</div>
 </div>
 
 <script>
-    // Simulate complex PDF compilation process time (4 seconds)
-    // In production, you would poll the server or wait for the actual file conversion
+    // Simulate loading percentage glitching upwards
+    const percentageText = document.querySelector('.cyber-loading-percentage');
+    let percent = 0;
+    const interval = setInterval(() => {
+        percent += Math.floor(Math.random() * 15) + 5;
+        if(percent >= 100) {
+            percent = 100;
+            clearInterval(interval);
+        }
+        percentageText.innerText = percent + "%";
+    }, 350);
+
+    // Redirect after 4 seconds with pixel dissolve out
     setTimeout(() => {
-        window.location.href = '/success?file=<%= file %>';
+        document.body.style.animation = 'pixelDissolve 0.8s forwards';
+        setTimeout(() => {
+            window.location.href = '/success?file=<%= file %>';
+        }, 800);
     }, 4000);
 </script>
 </body>

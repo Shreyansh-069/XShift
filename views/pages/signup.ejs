@@ -1,43 +1,92 @@
 <%- include('../partials/header') %>
-<div class="page-container stone-wall torch-flicker">
-    <div class="scroll-container vertical-scroll">
-        <div class="crest gold-embossed">Xshift</div>
+<div class="cyber-container" style="overflow-y: auto; padding: 3rem 0;">
+    <div class="cyber-grid-bg"></div>
+    <div class="pixel-noise-bg"></div>
+
+    <div class="cyber-login-card glass-panel" style="margin: auto;">
+        <div class="glitch-logo-container" style="margin-bottom: 1.5rem;">
+            <h1 class="cyber-logo" data-text="Xshift" style="font-size: 2rem;">Xshift</h1>
+            <h2 style="font-family: 'Space Grotesk', sans-serif; color: #fff; margin: 15px 0 5px 0;">Create your account</h2>
+            <p class="cyber-tagline">Join Xshift and start converting images to PDF</p>
+        </div>
         
-        <form id="magic-signup-form" class="magic-form">
-            <h2 style="text-align: center; font-family: 'Cinzel', serif; color: #d0c090; margin-bottom: 20px;">Forging An Identity</h2>
-            
-            <div class="input-slot parchment-slot">
-                <label>EMAIL</label>
-                <input type="email" id="email" name="email" class="sepia-ink" placeholder="Enter your email address..." required>
+        <form id="cyber-signup-form" class="cyber-form">
+            <div class="cyber-input-group">
+                <input type="text" id="username" name="username" class="cyber-input" placeholder=" " required>
+                <label for="username" class="cyber-label">Username</label>
+                <div class="cyber-input-border"></div>
+            </div>
+
+            <div class="cyber-input-group">
+                <input type="email" id="email" name="email" class="cyber-input" placeholder=" " required>
+                <label for="email" class="cyber-label">Email</label>
+                <div class="cyber-input-border"></div>
             </div>
             
-            <div class="input-slot parchment-slot">
-                <label>PASSWORD</label>
-                <input type="password" id="password" name="password" class="sepia-ink" placeholder="•••••••••" required minlength="8">
-                <small style="color: #a09070; font-family: 'Cinzel', serif; font-size: 0.7rem; display: block; margin-top: 5px;">Must be at least 8 characters long</small>
+            <div class="cyber-input-group">
+                <input type="password" id="password" name="password" class="cyber-input" placeholder=" " required minlength="8">
+                <label for="password" class="cyber-label">Password</label>
+                <button type="button" id="toggle-password" class="cyber-toggle-pwd">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </button>
+                <div class="cyber-input-border"></div>
+            </div>
+
+            <div class="cyber-input-group">
+                <input type="password" id="confirmPassword" name="confirmPassword" class="cyber-input" placeholder=" " required minlength="8">
+                <label for="confirmPassword" class="cyber-label">Confirm Password</label>
+                <div class="cyber-input-border"></div>
             </div>
             
-            <div id="form-error" style="color: #ff4d4d; margin-top: 10px; display: none; text-align: center; font-family: 'Cinzel', serif;">Error</div>
-            <div id="form-success" style="color: #4CAF50; margin-top: 10px; display: none; text-align: center; font-family: 'Cinzel', serif;">Success</div>
+            <div id="form-error" class="cyber-error" style="display: none;"></div>
+            <div id="form-success" class="cyber-error" style="display: none; background: rgba(0,255,136,0.1); border-color: rgba(0,255,136,0.3); color: #00ff88;"></div>
             
-            <button type="submit" class="heavy-iron-btn emerald-glow" style="margin-top: 20px;">Forge Moniker</button>
+            <button type="submit" class="cyber-btn cyber-glitch-btn">
+                <span class="btn-text">SIGN UP</span>
+                <span class="btn-bg"></span>
+            </button>
             
-            <div style="margin-top:20px; text-align:center; font-family: 'Cinzel', serif; font-size: 0.9rem; color: #d0c090;">
-                <p>Already have a moniker? <a href="/login" style="color: #4db8ff; text-decoration: underline;">Enter the Sanctum</a></p>
+            <div class="cyber-footer">
+                <p>Already have an account? <a href="/login" class="cyber-link">Login</a></p>
             </div>
         </form>
     </div>
 </div>
 
 <script>
-document.getElementById('magic-signup-form').addEventListener('submit', async (e) => {
+// Show/Hide password
+const togglePwd = document.getElementById('toggle-password');
+const pwdInput = document.getElementById('password');
+togglePwd.addEventListener('click', () => {
+    const type = pwdInput.getAttribute('type') === 'password' ? 'text' : 'password';
+    pwdInput.setAttribute('type', type);
+    if(type === 'text') {
+        togglePwd.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>';
+    } else {
+        togglePwd.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+    }
+});
+
+// Form submit
+document.getElementById('cyber-signup-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+    const password = pwdInput.value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
     const errorDiv = document.getElementById('form-error');
     const successDiv = document.getElementById('form-success');
+    
     errorDiv.style.display = 'none';
     successDiv.style.display = 'none';
+    
+    if(password !== confirmPassword) {
+        errorDiv.style.display = 'block';
+        errorDiv.innerText = 'Passwords do not match.';
+        return;
+    }
+
+    const btn = document.querySelector('.cyber-btn');
+    btn.classList.add('loading');
     
     try {
         const response = await fetch('/api/signup', {
@@ -45,22 +94,24 @@ document.getElementById('magic-signup-form').addEventListener('submit', async (e
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
         });
-        
         const data = await response.json();
         
-        if (response.ok) {
-            successDiv.style.display = 'block';
-            successDiv.innerText = data.message || 'New user created! Redirecting...';
-            setTimeout(() => {
-                window.location.href = '/login';
-            }, 1000);
-        } else {
-            errorDiv.style.display = 'block';
-            errorDiv.innerText = data.error || 'Failed to craft new moniker.';
-        }
+        setTimeout(() => {
+            btn.classList.remove('loading');
+            if (response.ok) {
+                successDiv.style.display = 'block';
+                successDiv.innerText = 'Registration Successful! Connecting to mainframe...';
+                document.body.style.animation = 'pixelDissolve 0.8s forwards';
+                setTimeout(() => window.location.href = '/login', 1000);
+            } else {
+                errorDiv.style.display = 'block';
+                errorDiv.innerText = data.error || 'Registration Failed.';
+            }
+        }, 800);
     } catch (err) {
+        btn.classList.remove('loading');
         errorDiv.style.display = 'block';
-        errorDiv.innerText = 'The connection to the sanctum was severed.';
+        errorDiv.innerText = 'Network Error.';
     }
 });
 </script>

@@ -1,23 +1,66 @@
 <%- include('../partials/header') %>
-<div class="page-container wooden-table warm-amber-lighting">
+<div class="cyber-container">
+    <div class="cyber-grid-bg"></div>
     
-    <div class="scroll-container horizontal-scroll with-wax-seal">
-        <div class="wax-seal burgundy-seal"></div>
+    <!-- Confetti container -->
+    <div id="cyber-confetti-container"></div>
+
+    <div class="cyber-success-card glass-panel" style="animation: cardEntry 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;">
         
-        <h1 class="gothic-text gold-text success-title">SUCCESS</h1>
-        
-        <div class="actions">
-            <!-- Simulated download link. -->
-            <a href="/uploads/<%= file %>" download="<%= file %>" class="heavy-iron-btn ruby-glow massive-btn">DOWNLOAD NOW</a>
-            
-            <a href="/home" class="restart-action quill-ink">
-                <span class="quill-icon">✒️</span> RESTART
-            </a>
+        <div class="success-icon-container">
+            <div class="cyber-icon pdf-icon final-pdf-icon" style="opacity: 1; animation: none;">PDF</div>
+            <div class="success-ring"></div>
         </div>
+        
+        <h1 class="success-heading">Your PDF is ready!</h1>
+        
+        <div class="file-details">
+            <span class="file-name"><%= file %></span>
+            <span class="file-size">~1.2 MB</span>
+        </div>
+        
+        <a href="/uploads/<%= file %>" download="<%= file %>" class="cyber-btn cyber-glitch-btn success-btn" id="download-btn">
+            <span class="btn-text">DOWNLOAD PDF</span>
+        </a>
+        
+        <a href="/home" class="cyber-link upload-more-link">
+            &larr; Upload more files
+        </a>
     </div>
-    
-    <!-- Magical atmospheric particles -->
-    <div class="magical-motes"></div>
 </div>
+
+<script>
+    // Confetti-style pixel animation on success
+    function createConfetti() {
+        const container = document.getElementById('cyber-confetti-container');
+        const colors = ['#00f0ff', '#00ff88', '#8a2be2', '#ff003c'];
+        
+        for(let i=0; i < 70; i++) {
+            const confetti = document.createElement('div');
+            confetti.classList.add('cyber-confetti-pixel');
+            
+            // Random properties
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            const left = Math.random() * 100;
+            const top = -10 + Math.random() * -20;
+            const size = Math.random() * 8 + 6;
+            const duration = Math.random() * 2 + 2.5;
+            const delay = Math.random() * 0.5;
+            
+            confetti.style.backgroundColor = color;
+            confetti.style.left = left + 'vw';
+            confetti.style.top = top + 'vh';
+            confetti.style.width = size + 'px';
+            confetti.style.height = size + 'px';
+            confetti.style.animation = `confettiFall ${duration}s ${delay}s linear forwards`;
+            confetti.style.boxShadow = `0 0 8px ${color}`;
+            
+            container.appendChild(confetti);
+        }
+    }
+    
+    // Trigger confetti rapidly upon document finish
+    window.addEventListener('DOMContentLoaded', createConfetti);
+</script>
 </body>
 </html>
