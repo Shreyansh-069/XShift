@@ -42,7 +42,8 @@ async function handleSignup(req, res) {
     catch (error) {
         console.log(`handleSignup Error : ${error}`)
         return res.status(500).json({
-            error: "Internal Server Error"
+            err : "Internal Server Error",
+            message: error.message
         });
     }
 }
@@ -53,6 +54,7 @@ async function handleLogin(req, res) {
         if (!email || !password) {
             return res.status(400).json({
                 error: "All fields are required"
+                
             });
         }
 
@@ -84,7 +86,8 @@ async function handleLogin(req, res) {
     catch (error) {
         console.log(`handleLogin Error : ${error}`);
         return res.status(500).json({
-            error: "Internal Server Error"
+            err: "Internal Server Error",
+            message: error.message
         });
     }
 }
@@ -103,7 +106,8 @@ function handleLogout(req, res) {
     catch (error) {
         console.log(`handleLogout Error : ${error}`);
         return res.status(500).json({
-            error: "Internal Server Error"
+            err: "Internal Server Error",
+            message: error.message
         });
     }
 }
