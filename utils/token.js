@@ -4,7 +4,7 @@ dotenv.config();
 
 const JWT_KEY = process.env.JWT_KEY;
 
-async function genToken(newUser, res) {
+function genToken(newUser, res) {
     try {
         const token = jwt.sign(
             {userId : newUser._id},

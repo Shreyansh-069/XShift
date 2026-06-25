@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 import connectDB from './utils/db.js';
 import { fileURLToPath } from 'url';
 import authRoute from './routes/auth.route.js';
+import PDF from './models/pdf.model.js';
 
 dotenv.config();
 
@@ -82,12 +83,12 @@ app.post('/convert', upload.single('image'), async (req, res) => {
 
         const pdfBytes = await pdfDoc.save();
         const fileName = `Xshift-${Date.now()}.pdf`;
-        const uploadsDir = path.join(__dirname, 'public', 'uploads');
-        if (!fs.existsSync(uploadsDir)) {
-            fs.mkdirSync(uploadsDir, { recursive: true });
-        }
-        const filePath = path.join(uploadsDir, fileName);
-        fs.writeFileSync(filePath, pdfBytes);
+
+        // Save PDF to MongoDB Atlas
+        await PDF.create({
+            fileName,
+            data: Buffer.from(pdfBytes)
+        });
 
         res.redirect(`/loading?file=${fileName}`);
     } catch (err) {
@@ -111,8 +112,28 @@ app.get('/download-pdf', (req, res) => {
     res.send("In a real implementation, the generated PDF file stream would be sent here.");
 });
 
-// Start Server
-app.listen(port, () => {
-    console.log(`Xshift Magic Server is running at http://localhost:${port}`);
-    console.log(`Open http://localhost:${port}/ in your browser to view the app!`);
+// 6. Serve PDFs from database
+app.get('/uploads/:file', async (req, res) => {
+    try {
+        const file = await PDF.findOne({ fileName: req.params.file });
+        if (!file) {
+            return res.status(404).send('File not found or has expired. Please try converting again.');
+        }
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="${file.fileName}"`);
+        res.send(file.data);
+    } catch (err) {
+        console.error('Error retrieving PDF:', err);
+        res.status(500).send('Error retrieving file from the database.');
+    }
 });
+
+// Start Server
+if (!process.env.VERCEL) {
+    app.listen(port, () => {
+        console.log(`Xshift Magic Server is running at http://localhost:${port}`);
+        console.log(`Open http://localhost:${port}/ in your browser to view the app!`);
+    });
+}
+
+export default app;
