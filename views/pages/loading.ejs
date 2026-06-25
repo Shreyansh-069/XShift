@@ -1,47 +1,48 @@
 <%- include('../partials/header') %>
-<div class="cyber-container">
-    <div class="cyber-grid-bg"></div>
-    <div class="pixel-noise-bg"></div>
+    <div class="cyber-container">
+        <div class="cyber-grid-bg"></div>
+        <div class="pixel-noise-bg"></div>
 
-    <div class="cyber-loader-wrapper">
-        <div class="cyber-conversion-anim">
-            <div class="cyber-icon image-icon glitch-pulse">IMG</div>
-            <div class="cyber-particles">
-                <span></span><span></span><span></span><span></span><span></span>
+        <div class="cyber-loader-wrapper">
+            <div class="cyber-conversion-anim">
+                <div class="cyber-icon image-icon glitch-pulse">IMG</div>
+                <div class="cyber-particles">
+                    <span></span><span></span><span></span><span></span><span></span>
+                </div>
+                <div class="cyber-icon pdf-icon">PDF</div>
             </div>
-            <div class="cyber-icon pdf-icon">PDF</div>
-        </div>
-        
-        <h1 class="cyber-loader-txt">Converting your images<span class="blink">...</span></h1>
-        <p class="cyber-tagline">Please wait while we create your PDF</p>
 
-        <div class="glitch-progress-container">
-            <div class="glitch-progress-bar"></div>
+            <h1 class="cyber-loader-txt">Converting your images<span class="blink">...</span></h1>
+            <p class="cyber-tagline">Please wait while we create your PDF</p>
+
+            <div class="glitch-progress-container">
+                <div class="glitch-progress-bar"></div>
+            </div>
+            <div class="cyber-loading-percentage">0%</div>
         </div>
-        <div class="cyber-loading-percentage">0%</div>
     </div>
-</div>
 
-<script>
-    // Simulate loading percentage glitching upwards
-    const percentageText = document.querySelector('.cyber-loading-percentage');
-    let percent = 0;
-    const interval = setInterval(() => {
-        percent += Math.floor(Math.random() * 15) + 5;
-        if(percent >= 100) {
-            percent = 100;
-            clearInterval(interval);
-        }
-        percentageText.innerText = percent + "%";
-    }, 350);
+    <script>
+        // Simulate loading percentage glitching upwards
+        const percentageText = document.querySelector('.cyber-loading-percentage');
+        let percent = 0;
+        const interval = setInterval(() => {
+            percent += Math.floor(Math.random() * 15) + 5;
+            if (percent >= 100) {
+                percent = 100;
+                clearInterval(interval);
+            }
+            percentageText.innerText = percent + "%";
+        }, 350);
 
-    // Redirect after 4 seconds with pixel dissolve out
-    setTimeout(() => {
-        document.body.style.animation = 'pixelDissolve 0.8s forwards';
+        // Redirect after 4 seconds with pixel dissolve out
         setTimeout(() => {
-            window.location.href = '/success?file=<%= file %>';
-        }, 800);
-    }, 4000);
-</script>
-</body>
-</html>
+            document.body.style.animation = 'pixelDissolve 0.8s forwards';
+            setTimeout(() => {
+                window.location.href = '/success?file=<%= file %>';
+            }, 800);
+        }, 4000);
+    </script>
+    </body>
+
+    </html>
