@@ -7,8 +7,7 @@
         <nav class="cyber-navbar">
             <div class="cyber-logo" data-text="Xshift" style="font-size: 1.5rem; letter-spacing: 1px;">Xshift</div>
             <div class="cyber-nav-links">
-                <a href="/home" class="cyber-link active">Home</a>
-                <button id="logout-btn" class="cyber-btn-outline">Logout</button>
+                <a href="/" class="cyber-link active">Home</a>
             </div>
         </nav>
 
@@ -17,24 +16,23 @@
             <div class="hero-content">
                 <h1 class="hero-heading">Upload your images<span class="blink"
                         style="color: var(--cyber-accent);">_</span></h1>
-                <p class="cyber-tagline" style="font-size: 1.1rem; margin-bottom: 2rem;">JPEG or PNG &rarr; Convert
-                    instantly to PDF</p>
+                <p class="cyber-tagline" style="font-size: 1.1rem; margin-bottom: 2rem;">JPEG or PNG &rarr; Upload multiple images & reorder</p>
 
-                <form action="/convert" method="POST" enctype="multipart/form-data" id="upload-form"
+                <form action="/upload-images" method="POST" enctype="multipart/form-data" id="upload-form"
                     class="cyber-upload-form">
 
-                    <input type="file" name="image" id="file-upload" class="hidden-input"
-                        accept="image/png, image/jpeg">
+                    <input type="file" name="images" id="file-upload" class="hidden-input"
+                        accept="image/png, image/jpeg" multiple>
 
                     <button type="button" class="cyber-btn cyber-glitch-btn" id="trigger-upload"
                         style="margin-top: 1rem; padding: 16px 35px; font-size: 1.1rem; width: auto;">
-                        <span class="btn-text">UPLOAD</span>
+                        <span class="btn-text">UPLOAD IMAGES</span>
                     </button>
                     <div id="file-name-display" class="file-chosen-text"></div>
 
                     <button type="submit" id="submit-upload" class="cyber-btn-outline"
                         style="display: none; margin-top: 1.5rem; padding: 12px 25px; border-color: var(--cyber-accent); color: var(--cyber-accent);">
-                        CONVERT TO PDF
+                        PREVIEW & REORDER
                     </button>
                 </form>
             </div>
@@ -50,7 +48,7 @@
         <!-- Developer Socials -->
         <div class="developer-socials"
             style="display: flex; justify-content: center; align-items: center; gap: 1.5rem; margin: 4rem auto 2rem auto; position: relative; z-index: 10; font-family: inherit;">
-            <span style="font-size: 0.9rem; letter-spacing: 2px; color: rgba(255,255,255,0.6); font-weight: bold; text-transform: uppercase;">Developer: Shreyansh</span>
+            <span style="font-size: 0.9rem; letter-spacing: 2px; color: rgba(255,255,255,0.6); font-weight: bold; text-transform: uppercase;">Developer: SHREYANSH</span>
             <div style="display: flex; gap: 1.2rem; align-items: center;">
                 <a href="https://www.linkedin.com/in/shreyansh-nechaniya-4b5771375/" target="_blank"
                     style="color: var(--cyber-accent); display: flex; align-items: center; justify-content: center; transition: transform 0.2s ease, filter 0.2s ease; text-decoration: none;"
@@ -88,30 +86,26 @@
 
         fileInput.addEventListener('change', function () {
             if (this.files && this.files.length > 0) {
-                displayTxt.innerText = '> FILE_ACQUIRED: ' + this.files[0].name;
+                const count = this.files.length;
+                if (count === 1) {
+                    displayTxt.innerText = '> 1 FILE_ACQUIRED: ' + this.files[0].name;
+                } else {
+                    displayTxt.innerText = `> ${count} FILES_ACQUIRED for conversion`;
+                }
                 displayTxt.style.color = 'var(--cyber-accent)';
                 submitBtn.style.display = 'inline-block';
                 triggerBtn.style.display = 'none';
 
                 const ext = this.files[0].name.split('.').pop().toUpperCase();
-                jpgFile.innerText = ext;
+                jpgFile.innerText = count > 1 ? `${count} IMGS` : ext;
                 document.querySelector('.jpg-file').classList.add('glitch-file');
             }
         });
 
         submitBtn.addEventListener('click', () => {
-            submitBtn.innerText = 'CONVERTING...';
+            submitBtn.innerText = 'STAGING IMAGES...';
             submitBtn.style.pointerEvents = 'none';
             submitBtn.style.background = 'rgba(0, 240, 255, 0.2)';
-        });
-
-        document.getElementById('logout-btn').addEventListener('click', async () => {
-            try {
-                await fetch('/api/logout', { method: 'POST' });
-                window.location.href = '/login';
-            } catch (e) {
-                console.error('Logout failed');
-            }
         });
     </script>
     </body>

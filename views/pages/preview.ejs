@@ -1,0 +1,297 @@
+<%- include('../partials/header') %>
+    <style>
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 2rem;
+            width: 100%;
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 1rem;
+            position: relative;
+            z-index: 5;
+        }
+
+        .preview-card {
+            background: rgba(10, 15, 30, 0.7);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            cursor: grab;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            user-select: none;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .preview-card:hover {
+            border-color: var(--cyber-accent);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+            transform: translateY(-4px);
+        }
+
+        .preview-card.dragging {
+            opacity: 0.4;
+            border-style: dashed;
+            border-color: var(--cyber-accent);
+            transform: scale(0.95);
+        }
+
+        .preview-card.drag-over {
+            border-color: #00ff88;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+            transform: scale(1.05);
+        }
+
+        .preview-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: contain;
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .page-badge {
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid var(--cyber-accent);
+            color: var(--cyber-accent);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.8rem;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 4px;
+            margin-top: 1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .preview-actions-bar {
+            width: 100%;
+            max-width: 1200px;
+            margin: 2rem auto 4rem auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1rem;
+            position: relative;
+            z-index: 5;
+        }
+
+        .preview-heading-section {
+            width: 100%;
+            max-width: 1200px;
+            margin: 2rem auto 1rem auto;
+            padding: 0 1rem;
+            position: relative;
+            z-index: 5;
+        }
+
+        /* Instruction badge */
+        .instruction-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 0, 60, 0.05);
+            border: 1px solid rgba(255, 0, 60, 0.2);
+            color: #ff003c;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-family: 'Space Grotesk', sans-serif;
+            margin-top: 1rem;
+            max-width: fit-content;
+        }
+    </style>
+
+    <div class="cyber-container" style="flex-direction: column; justify-content: flex-start; overflow-y: auto;">
+        <div class="cyber-grid-bg"></div>
+        <div class="pixel-noise-bg"></div>
+
+        <!-- Navbar -->
+        <nav class="cyber-navbar">
+            <div class="cyber-logo" data-text="Xshift" style="font-size: 1.5rem; letter-spacing: 1px;">Xshift</div>
+            <div class="cyber-nav-links">
+                <a href="/" class="cyber-link">Home</a>
+            </div>
+        </nav>
+
+        <!-- Heading Section -->
+        <div class="preview-heading-section">
+            <h1 class="hero-heading" style="font-size: 2.2rem; margin-bottom: 0.5rem;">
+                Reorder PDF Pages<span class="blink" style="color: var(--cyber-accent);">_</span>
+            </h1>
+            <p class="cyber-tagline" style="font-size: 1rem; color: rgba(255,255,255,0.7);">
+                Drag the cards below to arrange the order of pages in your compiled PDF.
+            </p>
+            <div class="instruction-box">
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                <span>Drag pages horizontally or vertically to reorder. PDF is generated in left-to-right order.</span>
+            </div>
+        </div>
+
+        <!-- Preview Drag & Drop Grid -->
+        <div class="preview-grid" id="preview-grid">
+            <% images.forEach((image, index) => { %>
+                <div class="preview-card" draggable="true" data-id="<%= image._id %>">
+                    <img src="/draft/<%= draftId %>/image/<%= image._id %>" alt="Page Preview" draggable="false">
+                    <div class="page-badge">Page <%= String(index + 1).padStart(2, '0') %></div>
+                </div>
+            <% }); %>
+        </div>
+
+        <!-- Actions Footer Bar -->
+        <div class="preview-actions-bar">
+            <a href="/" class="cyber-link" style="font-size: 1rem; display: flex; align-items: center; gap: 8px;">
+                &larr; Abort & Upload New
+            </a>
+
+            <button id="generate-btn" class="cyber-btn cyber-glitch-btn" style="padding: 14px 30px; width: auto;">
+                <span class="btn-text">GENERATE PDF</span>
+            </button>
+        </div>
+
+        <!-- Developer Socials -->
+        <div class="developer-socials"
+            style="display: flex; justify-content: center; align-items: center; gap: 1.5rem; margin: 4rem auto 2rem auto; position: relative; z-index: 10; font-family: inherit;">
+            <span style="font-size: 0.9rem; letter-spacing: 2px; color: rgba(255,255,255,0.6); font-weight: bold; text-transform: uppercase;">Developer: SHREYANSH</span>
+            <div style="display: flex; gap: 1.2rem; align-items: center;">
+                <a href="https://www.linkedin.com/in/shreyansh-nechaniya-4b5771375/" target="_blank"
+                    style="color: var(--cyber-accent); display: flex; align-items: center; justify-content: center; transition: transform 0.2s ease, filter 0.2s ease; text-decoration: none;"
+                    onmouseover="this.style.transform='translateY(-3px)'; this.style.filter='drop-shadow(0 0 8px var(--cyber-accent))'"
+                    onmouseout="this.style.transform='translateY(0)'; this.style.filter='none'"
+                    title="LinkedIn">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                        <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                    </svg>
+                </a>
+                <a href="https://github.com/Shreyansh-069" target="_blank"
+                    style="color: var(--cyber-accent); display: flex; align-items: center; justify-content: center; transition: transform 0.2s ease, filter 0.2s ease; text-decoration: none;"
+                    onmouseover="this.style.transform='translateY(-3px)'; this.style.filter='drop-shadow(0 0 8px var(--cyber-accent))'"
+                    onmouseout="this.style.transform='translateY(0)'; this.style.filter='none'"
+                    title="GitHub">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.579.688.481C19.137 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const grid = document.getElementById('preview-grid');
+        const cards = document.querySelectorAll('.preview-card');
+        const generateBtn = document.getElementById('generate-btn');
+        let dragSrcEl = null;
+
+        // Page number updater
+        function updatePageNumbers() {
+            const currentCards = grid.querySelectorAll('.preview-card');
+            currentCards.forEach((card, index) => {
+                const badge = card.querySelector('.page-badge');
+                badge.innerText = `Page ${String(index + 1).padStart(2, '0')}`;
+            });
+        }
+
+        // Drag & Drop handlers
+        function handleDragStart(e) {
+            this.classList.add('dragging');
+            dragSrcEl = this;
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+            document.querySelectorAll('.preview-card').forEach(card => {
+                card.classList.remove('drag-over');
+            });
+            updatePageNumbers();
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            return false;
+        }
+
+        function handleDragEnter(e) {
+            if (this !== dragSrcEl) {
+                this.classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave(e) {
+            this.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.stopPropagation();
+            if (dragSrcEl !== this) {
+                const list = this.parentNode;
+                const nodes = Array.from(list.children);
+                const srcIdx = nodes.indexOf(dragSrcEl);
+                const targetIdx = nodes.indexOf(this);
+
+                if (srcIdx < targetIdx) {
+                    list.insertBefore(dragSrcEl, this.nextSibling);
+                } else {
+                    list.insertBefore(dragSrcEl, this);
+                }
+            }
+            return false;
+        }
+
+        // Attach listeners to initial cards
+        function attachDragListeners(card) {
+            card.addEventListener('dragstart', handleDragStart, false);
+            card.addEventListener('dragenter', handleDragEnter, false);
+            card.addEventListener('dragover', handleDragOver, false);
+            card.addEventListener('dragleave', handleDragLeave, false);
+            card.addEventListener('drop', handleDrop, false);
+            card.addEventListener('dragend', handleDragEnd, false);
+        }
+
+        cards.forEach(attachDragListeners);
+
+        // Generate PDF request
+        generateBtn.addEventListener('click', async () => {
+            // Get order of image IDs from DOM
+            const orderedIds = Array.from(grid.querySelectorAll('.preview-card')).map(card => card.dataset.id);
+            
+            generateBtn.disabled = true;
+            const btnText = generateBtn.querySelector('.btn-text');
+            btnText.innerText = 'GENERATING PDF...';
+            generateBtn.style.pointerEvents = 'none';
+            generateBtn.style.background = 'rgba(0, 240, 255, 0.2)';
+
+            try {
+                const response = await fetch('/draft/<%= draftId %>/convert', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ order: orderedIds })
+                });
+
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    // Redirect to the loading screen
+                    window.location.href = `/loading?file=${data.file}`;
+                } else {
+                    alert(data.error || 'Conversion failed.');
+                    window.location.reload();
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Connection error occurred.');
+                window.location.reload();
+            }
+        });
+    </script>
+</body>
+</html>
